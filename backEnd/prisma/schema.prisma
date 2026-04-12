@@ -7,18 +7,72 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+enum Role {
+  ADMIN
+  TESTER
+  DEV
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     Role   @default(TESTER)
+
+  // relations
+  createdTickets  Ticket[]  @relation("CreatedTickets")
+  assignedTickets Ticket[]  @relation("AssignedTickets")
+  comments        Comment[]
+
+  createdAt DateTime @default(now())
+}
+
+model Ticket {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+
+  status   TicketStatus @default(OPEN)
+  priority Priority     @default(MEDIUM)
+
+  // relations
+  createdBy Int
+  creator   User @relation("CreatedTickets", fields: [createdBy], references: [id])
+
+  assignedTo Int?
+  assignee   User? @relation("AssignedTickets", fields: [assignedTo], references: [id])
+
+  comments Comment[]
+
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([status])
+  @@index([createdBy])
+}
+
+model Comment {
+  id      Int    @id @default(autoincrement())
+  content String
+
+  ticketId Int
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }

@@ -1,6 +1,8 @@
+import { Role } from "../../../generated/prisma/index.js";
 import { prisma } from "../../../lib/prisma.js";
 import * as userService from "./user.service.js";
 
+// Lấy tất cả user hoặc theo email query param
 export const getUsers = async (req, res, next) => {
     try {
         let users;
@@ -18,6 +20,7 @@ export const getUsers = async (req, res, next) => {
     }
 };
 
+//Lấy user theo ID
 export const getUserById = async (req, res, next) => {
     try {
         const user = await userService.getUserById(req.params.id);
@@ -30,16 +33,39 @@ export const getUserById = async (req, res, next) => {
     }
 };
 
+// tạo người dùng mới
 export const createUser = async (req, res, next) => {
     try {
-        const existingUser = await userService.getUsers(req.body.email);// kiểm ra email đã tồn tại chưa
-        // console.log('data', existingUser);
-        if (existingUser.length > 0) {
-            return res.status(404).json({ message: 'Email already exists' });
-        }
         const newUser = await userService.createUser(req.body);
         res.status(201).json(newUser)
     } catch (err) {
+        if (err.message === 'Email already exists') {
+            return res.status(404).json({ message: 'Email already exists' });
+        }
         next(err);
+    }
+    console.log(err);
+}
+
+//chỉnh sửa User
+export const updateUser = async (req, res, next) => {
+    try {
+        const updateUser = await userService.updateUser(req.params.id, req.body);
+        res.status(200).json(updateUser);
+    } catch (err) {
+        next(err);
+    }
+}
+
+// chỉnh sửa tranh thái hoạt động của user (không được phép xóa user do các quan hệ với comment)
+export const disableUser = async (req, res, next) => {
+    try {
+        const disableUser = await userService.disableUser(req.params.id, req.body);
+        res.status(204).send(disableUser)
+    } catch (err) {
+        if (err.message === 'Forbidden: Only ADMIN can change user status') {
+            return res.status(404).json({ message: 'Forbidden: Only ADMIN can change user status' });
+        }
+        next(err)
     }
 }

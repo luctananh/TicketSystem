@@ -17,6 +17,7 @@ export const getAllUsers = () => {
             email: true,
             name: true,
             role: true,
+            isDeleted: true,
             createdAt: true
         },
     });
@@ -29,6 +30,7 @@ export const getUserById = (id) => {
             email: true,
             name: true,
             role: true,
+            isDeleted: true,
             createdAt: true
         }
     });
@@ -44,3 +46,21 @@ export const createUser = (userData) => {
         },
     });
 }
+
+export const updateUser = (id, userUpdateData) => {
+    // console.log("DATA UPDATE:", userUpdateData);
+    return prisma.user.update({
+        where: {
+            id: parseInt(id)
+        },
+        data: userUpdateData
+    })
+
+}
+
+export const disableUser = (id, isDeletedValue) => {
+    return prisma.user.update({
+        where: { id: parseInt(id) },
+        data: { isDeleted: isDeletedValue }
+    });
+};

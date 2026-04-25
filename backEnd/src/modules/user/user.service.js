@@ -29,6 +29,7 @@ export const updateUser = async (id, userUpdateData) => {
     //         throw new Error('Email already exists');
     //     }
     // }
+    // userUpdateData.password = await bcrypt.hash(userUpdateData.password, 10);
     return userRepo.updateUser(id, userUpdateData);
 
 }

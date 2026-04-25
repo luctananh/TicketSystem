@@ -15,8 +15,8 @@ export const getUsers = async (req, res, next) => {
             users = await userService.getAllUsers();
         }
         res.json(users);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 };
 
@@ -28,8 +28,8 @@ export const getUserById = async (req, res, next) => {
             return res.status(404).json({ message: 'User not found' });
         }
         res.json(user);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 };
 
@@ -38,13 +38,13 @@ export const createUser = async (req, res, next) => {
     try {
         const newUser = await userService.createUser(req.body);
         res.status(201).json(newUser)
-    } catch (err) {
-        if (err.message === 'Email already exists') {
+    } catch (error) {
+        if (error.message === 'Email already exists') {
             return res.status(404).json({ message: 'Email already exists' });
         }
-        next(err);
+        next(error);
     }
-    console.log(err);
+    console.log(error);
 }
 
 //chỉnh sửa User
@@ -52,8 +52,8 @@ export const updateUser = async (req, res, next) => {
     try {
         const updateUser = await userService.updateUser(req.params.id, req.body);
         res.status(200).json(updateUser);
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 }
 
@@ -62,10 +62,10 @@ export const disableUser = async (req, res, next) => {
     try {
         const disableUser = await userService.disableUser(req.params.id, req.body);
         res.status(204).send(disableUser)
-    } catch (err) {
-        if (err.message === 'Forbidden: Only ADMIN can change user status') {
+    } catch (error) {
+        if (error.message === 'Forbidden: Only ADMIN can change user status') {
             return res.status(404).json({ message: 'Forbidden: Only ADMIN can change user status' });
         }
-        next(err)
+        next(error)
     }
 }

@@ -50,9 +50,7 @@ export const createUser = (userData) => {
 export const updateUser = (id, userUpdateData) => {
     // console.log("DATA UPDATE:", userUpdateData);
     return prisma.user.update({
-        where: {
-            id: parseInt(id)
-        },
+        where: { id: parseInt(id) },
         data: userUpdateData
     })
 

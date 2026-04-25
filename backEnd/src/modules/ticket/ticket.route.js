@@ -1,7 +1,18 @@
 import express from 'express';
-// import { getAuth } from './auth.controller';
+import {
+    getTicketId,
+    getAllTicket,
+    createTicket,
+    updateTicket,
+    deleteTicket
+} from './ticket.controller';
+
 const router = express.Router();
 
-router.get("/ticket", getAuth);
+router.get("/", getAllTicket);
+router.get("/:id", getTicketId);
+router.post("/", createTicket);
+router.patch("/:id", updateTicket);
+router.delete("/:id", deleteTicket);
 
 export default router;

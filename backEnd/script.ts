@@ -39,119 +39,169 @@
 //     process.exit(1);
 //   });
 import { prisma } from "./lib/prisma";
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 async function main() {
-  // Create multiple users
-  const hashedPassword = await bcrypt.hash('123456', 10);
-  const user1 = await prisma.user.create({
+  const hashedPassword = await bcrypt.hash("123456", 10);
+
+  //////////////////////
+  // USERS
+  //////////////////////
+  const admin = await prisma.user.create({
     data: {
-      email: "admin@example.com",
+      email: "admin@gmail.com",
       password: hashedPassword,
-      name: "Admin User",
+      name: "Quản trị viên",
       role: "ADMIN",
     },
   });
 
-  const user2 = await prisma.user.create({
+  const dev1 = await prisma.user.create({
     data: {
-      email: "dev@example.com",
+      email: "dev1@gmail.com",
       password: hashedPassword,
-      name: "Developer User",
+      name: "Nguyễn Văn Dev",
       role: "DEV",
     },
   });
 
-  const user3 = await prisma.user.create({
+  const dev2 = await prisma.user.create({
     data: {
-      email: "tester@example.com",
+      email: "dev2@gmail.com",
       password: hashedPassword,
-      name: "Tester User",
+      name: "Trần Văn Dev",
+      role: "DEV",
+    },
+  });
+
+  const tester1 = await prisma.user.create({
+    data: {
+      email: "tester1@gmail.com",
+      password: hashedPassword,
+      name: "Lê Thị Tester",
       role: "TESTER",
     },
   });
 
-  console.log("Created users:", user1.email, user2.email, user3.email);
+  const tester2 = await prisma.user.create({
+    data: {
+      email: "tester2@gmail.com",
+      password: hashedPassword,
+      name: "Phạm Văn Tester",
+      role: "TESTER",
+    },
+  });
 
-  // Create tickets
+  console.log("Đã tạo users");
+
+  //////////////////////
+  // TICKETS
+  //////////////////////
   const ticket1 = await prisma.ticket.create({
     data: {
-      title: "Bug in user authentication",
-      description: "Users are unable to log in with correct credentials.",
+      title: "Lỗi đăng nhập hệ thống",
+      description: "Người dùng không thể đăng nhập dù nhập đúng mật khẩu",
       status: "OPEN",
       priority: "HIGH",
-      createdBy: user1.id,
-      assignedTo: user2.id,
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 7)), // 7 days from now
+      createdBy: admin.id,
+      dueDate: new Date(new Date().setDate(new Date().getDate() + 7)),
+
+      ticketUsers: {
+        create: [
+          {
+            userId: dev1.id,
+            role: "DEV",
+            isMain: true,
+          },
+          {
+            userId: dev2.id,
+            role: "DEV",
+            isMain: false,
+          },
+          {
+            userId: tester1.id,
+            role: "TESTER",
+            isMain: true,
+          },
+        ],
+      },
     },
   });
 
   const ticket2 = await prisma.ticket.create({
     data: {
-      title: "Feature: Implement dark mode",
-      description: "Add a dark mode toggle to the application UI.",
+      title: "Thêm chức năng chế độ tối",
+      description: "Cho phép người dùng bật/tắt dark mode",
       status: "IN_PROGRESS",
       priority: "MEDIUM",
-      createdBy: user1.id,
-      assignedTo: user3.id,
+      createdBy: admin.id,
+
+      ticketUsers: {
+        create: [
+          {
+            userId: dev2.id,
+            role: "DEV",
+            isMain: true,
+          },
+          {
+            userId: tester2.id,
+            role: "TESTER",
+            isMain: true,
+          },
+        ],
+      },
     },
   });
 
-  console.log("Created tickets:", ticket1.title, ticket2.title);
+  console.log("Đã tạo tickets");
 
-  // Create comments
-  await prisma.comment.create({
-    data: {
-      content: "I will investigate this issue immediately.",
-      ticketId: ticket1.id,
-      userId: user2.id,
-    },
+  //////////////////////
+  // COMMENTS
+  //////////////////////
+  await prisma.comment.createMany({
+    data: [
+      {
+        content: "Tôi sẽ kiểm tra lỗi này ngay",
+        ticketId: ticket1.id,
+        userId: dev1.id,
+      },
+      {
+        content: "Đã xác định được nguyên nhân, đang fix",
+        ticketId: ticket1.id,
+        userId: dev1.id,
+      },
+      {
+        content: "Giao diện dark mode đang được thiết kế",
+        ticketId: ticket2.id,
+        userId: dev2.id,
+      },
+      {
+        content: "Sau khi xong dev sẽ tiến hành test",
+        ticketId: ticket2.id,
+        userId: tester2.id,
+      },
+    ],
   });
 
-  await prisma.comment.create({
-    data: {
-      content: "Looking into possible solutions.",
-      ticketId: ticket1.id,
-      userId: user2.id,
-    },
-  });
+  console.log("Đã tạo comments");
 
-  await prisma.comment.create({
-    data: {
-      content: "Great idea! I'll start working on the design.",
-      ticketId: ticket2.id,
-      userId: user3.id,
-    },
-  });
-
-  console.log("Created comments.");
-
-  // Fetch all data to verify
-  const allUsers = await prisma.user.findMany({
-    include: {
-      createdTickets: true,
-      assignedTickets: true,
-      comments: true,
-    },
-  });
-  console.log("All users with relations:", JSON.stringify(allUsers, null, 2));
-
-  const allTickets = await prisma.ticket.findMany({
+  //////////////////////
+  // VERIFY DATA
+  //////////////////////
+  const tickets = await prisma.ticket.findMany({
     include: {
       creator: true,
-      assignee: true,
+      ticketUsers: {
+        include: {
+          user: true,
+        },
+      },
       comments: true,
     },
   });
-  console.log("All tickets with relations:", JSON.stringify(allTickets, null, 2));
 
-  const allComments = await prisma.comment.findMany({
-    include: {
-      user: true,
-      ticket: true,
-    },
-  });
-  console.log("All comments with relations:", JSON.stringify(allComments, null, 2));
+  console.log("Dữ liệu tickets:");
+  console.dir(tickets, { depth: null });
 }
 
 main()

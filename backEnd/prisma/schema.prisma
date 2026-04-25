@@ -7,6 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
+// ENUM
 enum Role {
   ADMIN
   TESTER
@@ -25,56 +26,87 @@ enum Priority {
   HIGH
 }
 
-model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  password  String
-  name      String
-  role      Role    @default(TESTER)
-  isDeleted Boolean @default(false)
-
-  // relations
-  createdTickets  Ticket[]  @relation("CreatedTickets")
-  assignedTickets Ticket[]  @relation("AssignedTickets")
-  comments        Comment[]
-
-  createdAt DateTime @default(now())
+enum TicketUserRole {
+  DEV
+  TESTER
 }
 
+// USER
+model User {
+  // ===== Fields =====
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(TESTER)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // ===== Relations =====
+  createdTickets Ticket[]     @relation("CreatedTickets")
+  comments       Comment[]
+  ticketUsers    TicketUser[]
+}
+
+// TICKET
 model Ticket {
-  id          Int     @id @default(autoincrement())
+  // ===== Fields =====
+  id          Int          @id @default(autoincrement())
   title       String
   description String?
+  status      TicketStatus @default(OPEN)
+  priority    Priority     @default(MEDIUM)
 
-  status   TicketStatus @default(OPEN)
-  priority Priority     @default(MEDIUM)
-
-  // relations
   createdBy Int
-  creator   User @relation("CreatedTickets", fields: [createdBy], references: [id])
-
-  assignedTo Int?
-  assignee   User? @relation("AssignedTickets", fields: [assignedTo], references: [id])
-
-  comments Comment[]
 
   dueDate   DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  // ===== Relations =====
+  creator     User         @relation("CreatedTickets", fields: [createdBy], references: [id])
+  ticketUsers TicketUser[]
+  comments    Comment[]
+
+  // ===== Index =====
   @@index([status])
   @@index([createdBy])
 }
 
+// TICKET USER
+model TicketUser {
+  // ===== Fields =====
+  id       Int @id @default(autoincrement())
+  ticketId Int
+  userId   Int
+
+  role   TicketUserRole
+  isMain Boolean        @default(false)
+
+  createdAt DateTime @default(now())
+
+  // ===== Relations =====
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  // ===== Constraint / Index =====
+  @@unique([ticketId, userId, role])
+  @@index([userId])
+}
+
+// COMMENT
 model Comment {
+  // ===== Fields =====
   id      Int    @id @default(autoincrement())
   content String
 
   ticketId Int
-  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId   Int
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ===== Relations =====
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
 }

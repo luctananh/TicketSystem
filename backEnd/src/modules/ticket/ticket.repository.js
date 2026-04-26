@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { prisma } from "../../../lib/prisma.ts";
 
 // Lấy toàn bộ Ticket
@@ -28,9 +29,9 @@ export const getAllTicket = async () => {
 }
 
 // Lấy thông tin Ticket theo ID
-export const getTicketId = async (id) => {
+export const getTicketId = async (ticketId) => {
     return prisma.ticket.findUnique({
-        where: { id: parseInt(id) },
+        where: { id: parseInt(ticketId.id) },
         select: {
             id: true,
             title: true,
@@ -55,17 +56,17 @@ export const getTicketId = async (id) => {
 }
 
 //Tạo Ticket mới
-export const createTicket = async (dataTicket) => {
+export const createTicket = async (ticket) => {
     return prisma.ticket.create({
         data: {
-            title: dataTicket.title,
-            description: dataTicket.description,
-            status: dataTicket.status,
-            priority: dataTicket.priority,
-            dueDate: dataTicket.dueDate,
-            createdBy: dataTicket.createdBy,
-            ticketUsers: dataTicket.ticketUsers?.length ? {
-                create: dataTicket.ticketUsers.map(user => ({
+            title: ticket.title,
+            description: ticket.description,
+            status: ticket.status,
+            priority: ticket.priority,
+            dueDate: ticket.dueDate,
+            createdBy: ticket.createdBy,
+            ticketUsers: ticket.ticketUsers?.length ? {
+                create: ticket.ticketUsers.map(user => ({
                     userId: user.userId,
                     role: user.role,
                     isMain: user.isMain ?? false
@@ -86,23 +87,23 @@ export const createTicket = async (dataTicket) => {
         }
 
     });
-    console.log(dataTicket);
+    console.log(ticket);
 };
 
-export const updateTicket = async (id, data) => {
+export const updateTicket = async (updatePayload) => {
     return prisma.ticket.update({
-        where: { id: parseInt(id) },
+        where: { id: parseInt(updatePayload.id) },
         data: {
-            title: data.title,
-            description: data.description,
-            status: data.status,
-            priority: data.priority,
-            dueDate: data.dueDate,
-            createdBy: data.createdBy,
+            title: updatePayload.title,
+            description: updatePayload.description,
+            status: updatePayload.status,
+            priority: updatePayload.priority,
+            dueDate: updatePayload.dueDate,
+            createdBy: updatePayload.createdBy,
 
-            ticketUsers: data.ticketUsers?.length ? {
+            ticketUsers: updatePayload.ticketUsers?.length ? {
                 deleteMany: {},
-                create: data.ticketUsers.map(user => ({
+                create: updatePayload.ticketUsers.map(user => ({
                     userId: user.userId,
                     role: user.role,
                     isMain: user.isMain ?? false
@@ -118,3 +119,19 @@ export const deleteTicket = async (id) => {
     })
 };
 
+// export const createComment = async (commentData) => {
+//     return prisma.comment.create({
+//         data: {
+//             ticketId: parseInt(commentData.ticketId),
+//             userId: parseInt(commentData.userId),
+//             content: commentData.content
+
+//         },
+//         // include: {
+//         //     comments: {
+//         //         include: { user: true }
+//         //     }
+//         // }
+//     });
+
+// };

@@ -6,21 +6,25 @@ export const getAllTicket = async () => {
 };
 
 // Lấy thông tin Ticket theo ID
-export const getTicketId = async (id) => {
-    return ticketRepo.getTicketId(id);
+export const getTicketId = async (ticketId) => {
+    return ticketRepo.getTicketId(ticketId);
 };
 
 //Tạo Ticket mới
-export const createTicket = async (dataTicket) => {
-    return ticketRepo.createTicket(dataTicket);
+export const createTicket = async (ticket) => {
+    return ticketRepo.createTicket(ticket);
 };
 
 //Cập nhật Ticket
-export const updateTicket = async (id, data) => {
-    return ticketRepo.updateTicket(id, data);
+export const updateTicket = async (updatePayload) => {
+    return ticketRepo.updateTicket(updatePayload);
 };
 
 //Xóa ticket
 export const deleteTicket = async (id) => {
     return ticketRepo.deleteTicket(id);
 };
+
+// export const createComment = async (commentData) => {
+//     return ticketRepo.createComment(commentData);
+// };

@@ -5,6 +5,7 @@ import {
     createTicket,
     updateTicket,
     deleteTicket
+    // createComment
 } from './ticket.controller';
 
 const router = express.Router();
@@ -14,5 +15,7 @@ router.get("/:id", getTicketId);
 router.post("/", createTicket);
 router.patch("/:id", updateTicket);
 router.delete("/:id", deleteTicket);
+
+// router.post("/:id/comments", createComment)
 
 export default router;

@@ -47,3 +47,4 @@ export const disableUser = async (id, isActiveStatus, requesterUser) => {
     // Truyền isActiveStatus (true/false) xuống repository
     return userRepo.disableUser(id, isActiveStatus);
 };
+

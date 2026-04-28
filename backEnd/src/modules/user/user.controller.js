@@ -50,7 +50,11 @@ export const createUser = async (req, res, next) => {
 //chỉnh sửa User
 export const updateUser = async (req, res, next) => {
     try {
-        const updateUser = await userService.updateUser(req.params.id, req.body);
+        const updatePayload = {
+            id: req.params.id,
+            ...req.body
+        }
+        const updateUser = await userService.updateUser(updatePayload);
         res.status(200).json(updateUser);
     } catch (error) {
         next(error);
@@ -58,10 +62,14 @@ export const updateUser = async (req, res, next) => {
 }
 
 // chỉnh sửa tranh thái hoạt động của user (không được phép xóa user do các quan hệ với comment)
-export const disableUser = async (req, res, next) => {
+export const statusUser = async (req, res, next) => {
     try {
-        const disableUser = await userService.disableUser(req.params.id, req.body);
-        res.status(204).send(disableUser)
+        const statusData = {
+            id: req.params.id,
+            ...req.body
+        }
+        const newStatus = await userService.disableUser(statusData);
+        res.status(204).send(newStatus)
     } catch (error) {
         if (error.message === 'Forbidden: Only ADMIN can change user status') {
             return res.status(404).json({ message: 'Forbidden: Only ADMIN can change user status' });

@@ -22,7 +22,7 @@ export const createUser = async (userData) => {
     return userRepo.createUser(userData);
 };
 
-export const updateUser = async (id, userUpdateData) => {
+export const updateUser = async (updatePayload) => {
     // if (userUpdateData.email) {
     //     const existingUser = await userRepo.findByEmail(userUpdateData.email)
     //     if (existingUser && existingUser.id !== parseInt(id)) {
@@ -30,21 +30,22 @@ export const updateUser = async (id, userUpdateData) => {
     //     }
     // }
     // userUpdateData.password = await bcrypt.hash(userUpdateData.password, 10);
-    return userRepo.updateUser(id, userUpdateData);
+    return userRepo.updateUser(updatePayload);
 
 }
 
-export const disableUser = async (id, isActiveStatus, requesterUser) => {
+export const statusUser = async (statusData, requesterUser) => {
     // Vẫn kiểm tra quyền ADMIN
     if (requesterUser.role !== 'ADMIN') {
         throw new Error('Forbidden: Only ADMIN can change user status');
     }
 
-    const user = await userRepo.getUserById(id);
+    const user = await userRepo.getUserById(statusData.id);
+
     if (!user) {
         throw new Error('User not found');
     }
     // Truyền isActiveStatus (true/false) xuống repository
-    return userRepo.disableUser(id, isActiveStatus);
+    return userRepo.disableUser(statusData);
 };
 

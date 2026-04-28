@@ -47,18 +47,23 @@ export const createUser = (userData) => {
     });
 }
 
-export const updateUser = (id, userUpdateData) => {
+export const updateUser = (updatePayload) => {
     // console.log("DATA UPDATE:", userUpdateData);
     return prisma.user.update({
-        where: { id: parseInt(id) },
-        data: userUpdateData
+        where: { id: parseInt(updatePayload.id) },
+        data: {
+            email: updatePayload.email,
+            name: updatePayload.name,
+            role: updatePayload.role,
+            isDeleted: updatePayload.isDeleted
+        }
     })
 
 }
 
-export const disableUser = (id, isDeletedValue) => {
+export const statusUser = (statusData) => {
     return prisma.user.update({
-        where: { id: parseInt(id) },
-        data: { isDeleted: isDeletedValue }
+        where: { id: parseInt(statusData.id) },
+        data: { isDeleted: statusData }
     });
 };

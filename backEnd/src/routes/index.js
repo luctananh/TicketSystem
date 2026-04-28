@@ -10,6 +10,6 @@ router.use("/users", userRoutes);
 // router.use("/auth", authRoutes);
 router.use("/tickets", ticketRoutes);
 router.use("/comments", commentRoutes);
-router.post("/test", (req, res) => res.send("OK"));
+// router.post("/test", (req, res) => res.send("OK"));
 
 export default router;

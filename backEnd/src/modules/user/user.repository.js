@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma.ts";
 
 export const findByEmail = (email) => {
-    return prisma.user.findMany({
+    return prisma.user.findUniquey({
         where: { email },
         select: {
             id: true,

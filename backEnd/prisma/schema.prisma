@@ -46,6 +46,7 @@ model User {
   createdTickets Ticket[]     @relation("CreatedTickets")
   comments       Comment[]
   ticketUsers    TicketUser[]
+  sessions       Session[]
 }
 
 // TICKET
@@ -109,4 +110,21 @@ model Comment {
   // ===== Relations =====
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id           Int    @id @default(autoincrement())
+  userId       Int
+  refreshToken String @unique // Refresh token nên là duy nhất
+
+  userAgent String? // Thông tin trình duyệt/thiết bị
+  ipAddress String? // IP người dùng
+
+  expiresAt DateTime // Thời điểm token hết hạn
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

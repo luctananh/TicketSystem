@@ -28,6 +28,7 @@ export const getAllTicket = async (req, res, next) => {
 export const createTicket = async (req, res, next) => {
     try {
         const ticket = {
+            createdBy: req.user.id,
             ...req.body
         };
         const newTicket = await ticketService.createTicket(ticket);

@@ -5,8 +5,8 @@ export const createComment = async (data) => {
     return prisma.comment.create({
         data: {
             content: data.content,
-            ticketId: parseInt(data.ticketId), // ID của ticket nhận comment
-            userId: parseInt(data.userId)      // ID của người viết comment
+            ticketId: data.ticketId, // ID của ticket nhận comment
+            userId: data.userId      // ID của người viết comment
         },
         include: {
             user: { // Lấy thông tin người viết để hiển thị ngay
@@ -15,6 +15,12 @@ export const createComment = async (data) => {
         }
     });
 };
+
+// export const getCommentById = async (id) => {
+//     return prisma.comment.findUnique({
+//         where: { id: parseInt(id) }
+//     });
+// };
 
 export const updateComment = async (updatePayload) => {
     return prisma.comment.update({

@@ -85,9 +85,7 @@ export const createTicket = async (ticket) => {
                 include: { user: true }
             }
         }
-
     });
-    console.log(ticket);
 };
 
 export const updateTicket = async (updatePayload) => {

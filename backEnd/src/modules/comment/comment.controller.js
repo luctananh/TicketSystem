@@ -5,7 +5,11 @@ import * as commentService from '../comment/comment.service.js';
 
 export const createComment = async (req, res, next) => {
     try {
-        const commentData = { ...req.body };
+        const commentData = {
+            content: req.body.content,
+            ticketId: req.body.ticketId,
+            userId: req.body.userId
+        };
         const newComment = await commentService.createComment(commentData)
         res.json(newComment);
 
@@ -18,10 +22,12 @@ export const updateComment = async (req, res, next) => {
     try {
         const updatePayload = {
             id: req.params.id,
-            ...req.body
+            content: req.body.content,
+            ticketId: req.body.ticketId,
+            userId: req.body.userId
         }
         const newUpdate = await commentService.updateComment(updatePayload);
-        res.json(newUpdate);
+        res.status(200).send();
     } catch (error) {
         next(error);
     }
@@ -30,7 +36,7 @@ export const updateComment = async (req, res, next) => {
 export const deleteComment = async (req, res, next) => {
     try {
         const deleteComment = await commentService.deleteComment(req.params.id);
-        res.json(deleteComment);
+        res.status(200).send();
     } catch (error) {
         next(error);
     }

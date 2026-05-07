@@ -1,4 +1,3 @@
-import { id } from "zod/v4/locales";
 import { prisma } from "../../../lib/prisma.js";
 
 export const findByEmail = (email) => {
@@ -34,3 +33,26 @@ export const register = (registerData) => {
         },
     });
 };
+
+export const deleteSession = async (token) => {
+    // console.log("REPOSITORY - DELETING SESSION WITH TOKEN:", token.refreshToken);
+    return await prisma.session.deleteMany({
+        where: {
+            refreshToken: token.refreshToken,
+            // userId: token.userId
+        }
+    });
+    // console.log("REPOSITORY - DELETE RESULT:", result);
+
+};
+
+export const getSession = async (token) => {
+    return await prisma.session.findUnique({
+        where: { refreshToken: token },
+        select: {
+            id: true,
+            userId: true,
+            expiresAt: true
+        }
+    })
+}

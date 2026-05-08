@@ -24,7 +24,7 @@ export const getAllUsers = () => {
 };
 export const getUserById = (id) => {
     return prisma.user.findUnique({
-        where: { id: parseInt(id) }, // Chuyển ID sang số nguyên
+        where: { id: id }, // Chuyển ID sang số nguyên
         select: {
             id: true,
             email: true,
@@ -50,7 +50,7 @@ export const createUser = (userData) => {
 export const updateUser = (updatePayload) => {
     // console.log("DATA UPDATE:", userUpdateData);
     return prisma.user.update({
-        where: { id: parseInt(updatePayload.id) },
+        where: { id: updatePayload.id },
         data: {
             email: updatePayload.email,
             name: updatePayload.name,
@@ -63,7 +63,7 @@ export const updateUser = (updatePayload) => {
 
 export const statusUser = (statusData) => {
     return prisma.user.update({
-        where: { id: parseInt(statusData.id) },
-        data: { isDeleted: statusData }
+        where: { id: statusData.id },
+        data: { isDeleted: statusData.isDeleted }
     });
 };

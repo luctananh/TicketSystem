@@ -2,9 +2,9 @@
 import { secureHeapUsed } from "node:crypto";
 import { Role } from "../../../generated/prisma/index.js";
 import { prisma } from "../../../lib/prisma.js";
+import { env } from "../../config/config.js";
 import * as authService from "./auth.service.js";
 
-const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 //14 ngày 24 giờ 60 phút 60 giây
 export const register = async (req, res, next) => {
     try {
 
@@ -43,7 +43,7 @@ export const login = async (req, res, next) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: REFRESH_TOKEN_TTL,
+            maxAge: env.REFRESH_TOKEN_TTL,
         };
 
         res.cookie('refreshToken', refreshToken, cookieOptions);
@@ -101,7 +101,7 @@ export const refreshToken = async (req, res, next) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-            maxAge: REFRESH_TOKEN_TTL,
+            maxAge: env.REFRESH_TOKEN_TTL,
         };
 
         res.cookie('refreshToken', refreshToken, cookieOptions);

@@ -1,4 +1,3 @@
-import { useId } from "react";
 import { prisma } from "../../../lib/prisma.ts";
 
 // Lấy toàn bộ Ticket

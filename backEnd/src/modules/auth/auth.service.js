@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { json } from "zod";
 import { error } from "console";
 import ApiError from "../../utils/ApiError.js";
+import { env } from "../../config/config.js";
 
 dotenv.config();
 
@@ -38,8 +39,8 @@ export const logIn = async (loginData) => {
     //tạo accessToken với JWT
     const accessToken = jwt.sign(
         { id: user.id },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: ACCESS_TOKEN_TTL }
+        env.ACCESS_TOKEN_SECRET,
+        { expiresIn: env.ACCESS_TOKEN_TTL }
     );
     //tạo refresh token
     const refreshToken = crypto.randomBytes(64).toString('hex');
@@ -48,7 +49,7 @@ export const logIn = async (loginData) => {
     await authRepo.creatSession({
         userId: user.id,
         refreshToken: refreshToken,
-        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL)
+        expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_TTL)
     })
     //trả access Token, refresh token về 
     return { accessToken, refreshToken };
@@ -70,8 +71,8 @@ export const refreshToken = async (token) => {
 
     const accessToken = jwt.sign(
         { id: session.userId },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: ACCESS_TOKEN_TTL }
+        env.ACCESS_TOKEN_SECRET,
+        { expiresIn: env.ACCESS_TOKEN_TTL }
     );
     //tạo refresh token
     const refreshToken = crypto.randomBytes(64).toString('hex');
@@ -80,7 +81,7 @@ export const refreshToken = async (token) => {
     await authRepo.creatSession({
         userId: session.userId,
         refreshToken: refreshToken,
-        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL)
+        expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_TTL)
     })
     //trả access Token, refresh token về 
     return { accessToken, refreshToken };

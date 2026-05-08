@@ -5,6 +5,8 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 import { json } from "zod";
 import { error } from "console";
+import ApiError from "../../utils/ApiError.js";
+
 dotenv.config();
 
 const ACCESS_TOKEN_TTL = '30m';
@@ -15,7 +17,7 @@ const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 //14 ngày 24 giờ 60 phút 
 export const register = async (registerData) => {
     const existingUser = await authRepo.findByEmail(registerData.email)
     if (existingUser) {
-        throw new Error('Email already exists');
+        throw new ApiError(400, 'Email already exists');
     }
     registerData.password = await bcrypt.hash(registerData.password, 10);
     return authRepo.register(registerData);
@@ -24,13 +26,13 @@ export const register = async (registerData) => {
 export const logIn = async (loginData) => {
     const user = await authRepo.findByEmail(loginData.email)
     if (!user) {
-        throw new Error('Người dùng không tồn tại');
+        throw new ApiError(400, 'Người dùng không tồn tại');
         // return error('Người dùng không tồn tại');
     }
 
     const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
     if (!isPasswordValid) {
-        throw new Error('Password không chính xác');
+        throw new ApiError(400, 'Password không chính xác');
     }
 
     //tạo accessToken với JWT
@@ -61,7 +63,7 @@ export const refreshToken = async (token) => {
 
     if (!session || session.expiresAt < new Date()) {
         if (session) await authRepo.deleteSession({ refreshToken: token });
-        throw new Error('Session không hợp lệ hoặc đã hết hạn');
+        throw new ApiError(400, 'Session không hợp lệ hoặc đã hết hạn');
     }
 
     await authRepo.deleteSession({ refreshToken: token });

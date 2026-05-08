@@ -14,7 +14,11 @@ export const getUsers = async (req, res, next) => {
         } else {
             users = await userService.getAllUsers();
         }
-        res.json(users);
+        return res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": users
+        });
     } catch (error) {
         next(error);
     }
@@ -27,8 +31,9 @@ export const getUserById = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        // res.json(user);
+        // throw new Error("Lỗi test hệ thống")
         res.status(200).send(user);
+
     } catch (error) {
         next(error);
     }
@@ -38,7 +43,11 @@ export const getUserById = async (req, res, next) => {
 export const createUser = async (req, res, next) => {
     try {
         const newUser = await userService.createUser(req.body);
-        res.status(201).json(newUser)
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": newUser
+        });
     } catch (error) {
         if (error.message === 'Email already exists') {
             return res.status(404).json({ message: 'Email already exists' });
@@ -56,7 +65,11 @@ export const updateUser = async (req, res, next) => {
             ...req.body
         }
         const updateUser = await userService.updateUser(updatePayload);
-        res.status(200).json(updateUser);
+        res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": updateUser
+        });
     } catch (error) {
         next(error);
     }

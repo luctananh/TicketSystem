@@ -17,7 +17,11 @@ export const register = async (req, res, next) => {
         // console.log(registerData);
         const newUser = await authService.register(registerData);
 
-        return res.json(newUser);
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": newUser
+        });
     } catch (error) {
         next(error);
     }
@@ -43,7 +47,11 @@ export const login = async (req, res, next) => {
         };
 
         res.cookie('refreshToken', refreshToken, cookieOptions);
-        return res.json({ accessToken });
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": accessToken
+        });
     } catch (error) {
         next(error);
     }
@@ -72,7 +80,6 @@ export const logout = async (req, res, next) => {
         }
         return res.sendStatus(204);
     } catch (error) {
-        console.error("LOGOUT ERROR:", error);
         next(error);
     }
 };
@@ -98,10 +105,14 @@ export const refreshToken = async (req, res, next) => {
         };
 
         res.cookie('refreshToken', refreshToken, cookieOptions);
-        return res.json({ accessToken });
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": accessToken
+        });
     } catch (error) {
-        return res.status(500).json({ message: "Lỗi hệ thống" });
-        // next(error);
+        // return res.status(500).json({ message: "Lỗi hệ thống" });
+        next(error);
     }
 
 };

@@ -9,7 +9,11 @@ export const getTicketId = async (req, res, next) => {
             id: req.params.id
         };
         const newTicketId = await ticketService.getTicketId(ticketId);
-        res.json(newTicketId);
+        return res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": newTicketId
+        });
     } catch (error) {
         next(error)
     };
@@ -19,7 +23,11 @@ export const getTicketId = async (req, res, next) => {
 export const getAllTicket = async (req, res, next) => {
     try {
         const newAllTicket = await ticketService.getAllTicket();
-        res.json(newAllTicket)
+        return res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": newAllTicket
+        });
     } catch (error) {
         next(error)
     };
@@ -32,7 +40,11 @@ export const createTicket = async (req, res, next) => {
             ...req.body
         };
         const newTicket = await ticketService.createTicket(ticket);
-        res.json(newTicket);
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": newTicket
+        });
     } catch (error) {
         next(error)
     };
@@ -45,7 +57,11 @@ export const updateTicket = async (req, res, next) => {
             ...req.body
         };
         const newUpdate = await ticketService.updateTicket(updatePayload);
-        res.json(newUpdate);
+        return res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": newUpdate
+        });
     } catch (error) {
         next(error);
     };
@@ -54,7 +70,11 @@ export const updateTicket = async (req, res, next) => {
 export const deleteTicket = async (req, res, next) => {
     try {
         const deletedTicket = await ticketService.deleteTicket(req.params.id);
-        res.json(deletedTicket);
+        return res.status(204).json({
+            "success": true,
+            "message": "Success",
+            "data": deletedTicket
+        });
     } catch (error) {
         next(error)
     };

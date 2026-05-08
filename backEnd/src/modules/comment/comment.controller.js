@@ -11,8 +11,11 @@ export const createComment = async (req, res, next) => {
             userId: req.body.userId
         };
         const newComment = await commentService.createComment(commentData)
-        res.json(newComment);
-
+        return res.status(201).json({
+            "success": true,
+            "message": "Success",
+            "data": newComment
+        });
     } catch (error) {
         next(error);
     };
@@ -27,7 +30,11 @@ export const updateComment = async (req, res, next) => {
             userId: req.body.userId
         }
         const newUpdate = await commentService.updateComment(updatePayload);
-        res.status(200).send();
+        res.status(200).json({
+            "success": true,
+            "message": "Success",
+            "data": newUpdate
+        });
     } catch (error) {
         next(error);
     }
@@ -36,7 +43,7 @@ export const updateComment = async (req, res, next) => {
 export const deleteComment = async (req, res, next) => {
     try {
         const deleteComment = await commentService.deleteComment(req.params.id);
-        res.status(200).send();
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

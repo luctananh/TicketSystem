@@ -16,7 +16,7 @@ export const getUserById = async (id) => {
 export const createUser = async (userData) => {
     const existingUser = await userRepo.findByEmail(userData.email)
     if (existingUser.length > 0) {
-        throw new Error('Email already exists');
+        throw new ApiError(400, 'Email already exists');
     }
     userData.password = await bcrypt.hash(userData.password, 10);
     return userRepo.createUser(userData);
@@ -26,7 +26,7 @@ export const updateUser = async (updatePayload) => {
     // if (userUpdateData.email) {
     //     const existingUser = await userRepo.findByEmail(userUpdateData.email)
     //     if (existingUser && existingUser.id !== parseInt(id)) {
-    //         throw new Error('Email already exists');
+    //         throw new ApiError(400,('Email already exists');
     //     }
     // }
     // userUpdateData.password = await bcrypt.hash(userUpdateData.password, 10);
@@ -37,13 +37,13 @@ export const updateUser = async (updatePayload) => {
 export const statusUser = async (statusData, requesterUser) => {
     // Vẫn kiểm tra quyền ADMIN
     if (requesterUser.role !== 'ADMIN') {
-        throw new Error('Forbidden: Only ADMIN can change user status');
+        throw new ApiError(400, 'Forbidden: Only ADMIN can change user status');
     }
 
     const user = await userRepo.getUserById(statusData.id);
 
     if (!user) {
-        throw new Error('User not found');
+        throw new ApiError(400, 'User not found');
     }
     // Truyền isActiveStatus (true/false) xuống repository
     return userRepo.disableUser(statusData);

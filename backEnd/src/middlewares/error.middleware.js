@@ -8,6 +8,7 @@ export const errorHandler = async (err, req, res, next) => {
     let message = "lỗi hệ thống";
     let data = null;
 
+    // Zod validation error
     if (err instanceof ZodError) {
         statusCode = 400;
         message = "Dữ liệu nhập vào không hợp lệ";
@@ -16,22 +17,26 @@ export const errorHandler = async (err, req, res, next) => {
             const fieldName = issues.path[issues.path.length - 1];
             errorsList[fieldName] = issues.message;
         });
-        console.log(errorsList);
-
+        // console.log(errorsList);
         data = errorsList;
-    } else if (err instanceof ApiError) {
+    }
+    // Custom API error
+    else if (err instanceof ApiError) {
         statusCode = err.statusCode;
         message = err.message;
         data = err.message;
-    } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    }
+    // Prisma database error
+    else if (err instanceof Prisma.PrismaClientKnownRequestError) {
         statusCode = 500;
-        message = "lỗi hệ thống";
+        message = "lỗi cơ sở dữ liệu";
     }
     console.error(`[ERROR] ${req.method} ${req.url}:`, {
         code: statusCode,
         message: err.message,
         stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
+
     return res.status(statusCode).json({
         success: false,
         message: message,

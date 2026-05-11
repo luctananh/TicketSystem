@@ -10,11 +10,6 @@ import { env } from "../../config/config.js";
 
 dotenv.config();
 
-const ACCESS_TOKEN_TTL = '30m';
-// const ACCESS_TOKEN_TTL = '30s';
-const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 //14 ngày 24 giờ 60 phút 60 giây
-
-
 export const register = async (registerData) => {
     const existingUser = await authRepo.findByEmail(registerData.email)
     if (existingUser) {
